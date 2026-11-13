@@ -1,0 +1,164 @@
+<div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mb-4">
+  <div>
+    <h3 class="fw-bold mb-1">Bulk Employee Import</h3>
+    <p class="text-muted mb-0 small">Upload Excel or CSV files to quickly import multiple employees with validation</p>
+  </div>
+  <div class="d-flex flex-wrap gap-2 w-100 w-sm-auto">
+    <button class="btn btn-outline-secondary btn-sm flex-fill flex-sm-grow-0" (click)="downloadSampleCsv()">
+      <i class="bi bi-file-earmark-text me-1"></i> Sample CSV
+    </button>
+    <button class="btn btn-outline-success btn-sm flex-fill flex-sm-grow-0" (click)="downloadSampleExcel()">
+      <i class="bi bi-file-earmark-excel me-1"></i> Sample Excel
+    </button>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-7">
+    
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-header bg-white py-3">
+        <h5 class="fw-bold mb-0 text-primary"><i class="bi bi-cloud-arrow-up-fill me-2"></i> Upload File</h5>
+      </div>
+      <div class="card-body p-4">
+        
+        <div
+          class="dropzone mb-3"
+          [class.dragover]="dragOver"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)"
+          (drop)="onFileDrop($event)"
+          (click)="fileInput.click()"
+        >
+          <i class="bi bi-file-earmark-spreadsheet display-4 text-primary mb-2"></i>
+          <h5 class="fw-semibold mb-1">Select or drag & drop employee import file</h5>
+          <p class="text-muted small mb-0">Accepted formats: <strong>.xlsx, .xls, .csv</strong></p>
+          <input
+            type="file"
+            #fileInput
+            (change)="onFileSelected($event)"
+            style="display: none"
+            accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+          />
+        </div>
+
+        
+        <div *ngIf="selectedFile" class="d-flex justify-content-between align-items-center p-3 bg-light rounded border mb-3">
+          <div class="d-flex align-items-center text-truncate">
+            <i class="bi bi-file-earmark-check-fill text-success fs-3 me-3"></i>
+            <div>
+              <div class="fw-bold text-truncate">{{ selectedFile.name }}</div>
+              <div class="text-muted small">{{ (selectedFile.size / 1024).toFixed(2) }} KB</div>
+            </div>
+          </div>
+          <button class="btn btn-sm btn-outline-danger" (click)="removeFile()" [disabled]="importing">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+
+        
+        <div class="d-flex justify-content-end gap-2">
+          <button class="btn btn-secondary" (click)="removeFile()" *ngIf="selectedFile && !importing">Reset</button>
+          <button class="btn btn-primary px-4" (click)="startImport()" [disabled]="!selectedFile || importing">
+            <span class="spinner-border spinner-border-sm me-2" *ngIf="importing"></span>
+            {{ importing ? 'Validating & Importing...' : 'Start Import' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="col-lg-5">
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-header bg-white py-3">
+        <h6 class="fw-bold mb-0"><i class="bi bi-info-circle text-primary me-2"></i> Required Columns</h6>
+      </div>
+      <div class="card-body p-4">
+        <p class="text-muted small">Your Excel/CSV sheet should contain the following column headers:</p>
+        <ul class="list-group list-group-flush small">
+          <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+            <strong>Name</strong> <span class="badge bg-danger-subtle text-danger">Required</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+            <strong>Email</strong> <span class="badge bg-danger-subtle text-danger">Required (Unique)</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+            <strong>Phone</strong> <span class="badge bg-danger-subtle text-danger">Required</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+            <strong>Department</strong> <span class="badge bg-danger-subtle text-danger">Required</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+            <strong>Designation</strong> <span class="badge bg-danger-subtle text-danger">Required</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+            <strong>JoiningDate</strong> <span class="badge bg-danger-subtle text-danger">Required (YYYY-MM-DD)</span>  
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+            <strong>Status</strong> <span class="badge bg-light text-muted">Optional (Default: Active)</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mt-2" *ngIf="summary">
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-white py-3 d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
+      <h5 class="fw-bold mb-0 text-dark">
+        <i class="bi bi-clipboard2-data-fill text-primary me-2"></i> Import Summary: {{ summary.fileName }}
+      </h5>
+      <button class="btn btn-sm btn-primary" (click)="goToEmployeeList()">
+        <i class="bi bi-arrow-right-circle me-1"></i> Go to Employee List
+      </button>
+    </div>
+    <div class="card-body p-4">
+      
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <div class="p-3 bg-primary-subtle text-primary border border-primary-subtle rounded-3 text-center">
+            <h2 class="fw-bold mb-0">{{ summary.totalRecords }}</h2>
+            <div class="small fw-semibold">Total Records Processed</div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 bg-success-subtle text-success border border-success-subtle rounded-3 text-center">
+            <h2 class="fw-bold mb-0">{{ summary.successfulRecords }}</h2>
+            <div class="small fw-semibold">Successfully Saved</div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 bg-danger-subtle text-danger border border-danger-subtle rounded-3 text-center">
+            <h2 class="fw-bold mb-0">{{ summary.failedRecords }}</h2>
+            <div class="small fw-semibold">Failed Validation</div>
+          </div>
+        </div>
+      </div>
+
+      
+      <div *ngIf="summary.hasHeaderError && summary.errors && summary.errors.length > 0" class="mb-3">
+        <div class="alert alert-danger d-flex align-items-start mb-0" role="alert">
+          <i class="bi bi-exclamation-triangle-fill fs-4 me-3 mt-1 flex-shrink-0"></i>
+          <div class="w-100">
+            <h6 class="fw-bold mb-2">Column Header Error Detected</h6>
+            <p class="small mb-2 text-danger-emphasis">The file could not be processed because the required columns are missing or misspelled:</p>
+            <ul class="mb-0 ps-3 small">
+              <li *ngFor="let err of summary.errors" class="mb-1">
+                <strong>{{ err.field }}:</strong> {{ err.reason }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="summary.failedRecords === 0" class="alert alert-success d-flex align-items-center mb-0 mt-3" role="alert">
+        <i class="bi bi-check-circle-fill fs-4 me-3"></i>
+        <div>
+          <strong>Excellent!</strong> All records from <code>{{ summary.fileName }}</code> passed validation and were successfully saved.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

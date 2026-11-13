@@ -1,0 +1,81 @@
+<aside
+  class="sidebar"
+  [class.collapsed]="isCollapsed"
+  [class.mobile-open]="isMobileOpen"
+>
+  
+  <div class="brand">
+    <div class="brand-content d-flex align-items-center gap-2">
+      <i class="bi bi-person-badge fs-3 text-primary brand-icon"></i>
+      <span class="fs-5 fw-bold brand-text">EmpManage</span>
+    </div>
+    
+    <button
+      type="button"
+      class="btn btn-sm btn-link text-white-50 d-lg-none ms-auto p-1 close-btn"
+      (click)="closeMobile()"
+      aria-label="Close menu"
+    >
+      <i class="bi bi-x-lg fs-5"></i>
+    </button>
+  </div>
+
+  
+  <div class="nav flex-column py-3 sidebar-nav">
+    <div class="nav-section-title px-3 pb-2 text-uppercase small text-muted fw-bold">
+      Management
+    </div>
+    <div class="nav-section-divider d-none"></div>
+
+    <a
+      routerLink="/employees"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="nav-link"
+      [title]="isCollapsed ? 'Employees' : ''"
+      (click)="closeMobile()"
+    >
+      <i class="bi bi-people-fill"></i>
+      <span class="nav-text">Employees</span>
+    </a>
+
+    <a
+      routerLink="/employees/new"
+      routerLinkActive="active"
+      class="nav-link"
+      [title]="isCollapsed ? 'Add Employee' : ''"
+      (click)="closeMobile()"
+    >
+      <i class="bi bi-person-plus-fill"></i>
+      <span class="nav-text">Add Employee</span>
+    </a>
+
+    <a
+      routerLink="/import"
+      routerLinkActive="active"
+      class="nav-link"
+      [title]="isCollapsed ? 'Bulk Import' : ''"
+      (click)="closeMobile()"
+    >
+      <i class="bi bi-cloud-arrow-up-fill"></i>
+      <span class="nav-text">Bulk Import</span>
+    </a>
+  </div>
+
+  
+  <div class="sidebar-footer mt-auto p-3 border-top border-secondary border-opacity-25 small text-muted d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center gap-2" [title]="'MSSQL Clean Arch'">
+      <span class="badge bg-success p-1 rounded-circle" style="width: 8px; height: 8px;"></span>
+      <span class="sidebar-footer-text">MSSQL Clean Arch</span>
+    </div>
+    
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-secondary p-1 px-2 border-0 text-white-50 d-none d-lg-inline-flex align-items-center justify-content-center collapse-toggle-btn"
+      (click)="toggleCollapse()"
+      [title]="isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'"
+    >
+      <i class="bi" [ngClass]="isCollapsed ? 'bi-chevron-double-right' : 'bi-chevron-double-left'"></i>
+    </button>
+  </div>
+</aside>

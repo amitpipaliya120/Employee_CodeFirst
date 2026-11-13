@@ -1,0 +1,251 @@
+<div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mb-3">
+  <div>
+    <h3 class="fw-bold mb-1 fs-4">{{ isEditMode ? 'Edit Employee' : 'Create New Employee' }}</h3>
+    <p class="text-muted mb-0 small">{{ isEditMode ? 'Update employee profile details and attached files' : 'Enter basic details and attach documents' }}</p>
+  </div>
+  <a routerLink="/employees" class="btn btn-outline-secondary btn-sm flex-shrink-0 px-3">
+    <i class="bi bi-arrow-left me-1"></i> Back to List
+  </a>
+</div>
+
+<div class="row g-3">
+  
+  <div [ngClass]="(isEditMode && existingDocuments.length > 0) ? 'col-lg-8' : 'col-12'">
+    <div class="card border-0 shadow-sm mb-3 form-card">
+      <div class="card-header bg-white py-2 px-3 px-md-4">
+        <h6 class="fw-bold mb-0 text-primary"><i class="bi bi-person-lines-fill me-2"></i> Employee Details</h6>
+      </div>
+      <div class="card-body p-3 p-md-4">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          <div class="row g-3">
+            
+            <div [ngClass]="(isEditMode && existingDocuments.length > 0) ? 'col-12 col-md-6' : 'col-12 col-md-4'">
+              <label class="form-label fw-semibold">Full Name <span class="text-danger">*</span></label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder=""
+                formControlName="name"
+                [class.is-invalid]="form.get('name')?.invalid && form.get('name')?.touched"
+              />
+              <div class="invalid-feedback" *ngIf="form.get('name')?.errors?.['required']">Name is required.</div>
+              <div class="invalid-feedback" *ngIf="form.get('name')?.errors?.['maxlength']">Max 150 characters allowed.</div>
+            </div>
+
+            
+            <div [ngClass]="(isEditMode && existingDocuments.length > 0) ? 'col-12 col-md-6' : 'col-12 col-md-4'">
+              <label class="form-label fw-semibold">Email Address <span class="text-danger">*</span></label>
+              <input
+                type="email"
+                class="form-control"
+                placeholder=""
+                formControlName="email"
+                [class.is-invalid]="form.get('email')?.invalid && form.get('email')?.touched"
+              />
+              <div class="invalid-feedback" *ngIf="form.get('email')?.errors?.['required']">Email is required.</div>
+              <div class="invalid-feedback" *ngIf="form.get('email')?.errors?.['email']">Enter a valid email address.</div>
+              <div class="invalid-feedback" *ngIf="form.get('email')?.errors?.['alreadyExists']">An employee with this email address already exists.</div>
+            </div>
+
+            
+            <div [ngClass]="(isEditMode && existingDocuments.length > 0) ? 'col-12 col-md-6' : 'col-12 col-md-4'">
+              <label class="form-label fw-semibold">Phone Number <span class="text-danger">*</span></label>
+              <input
+                type="tel"
+                class="form-control"
+                placeholder=""
+                formControlName="phone"
+                [class.is-invalid]="form.get('phone')?.invalid && form.get('phone')?.touched"
+              />
+              <div class="invalid-feedback" *ngIf="form.get('phone')?.errors?.['required']">Phone is required.</div>
+              <div class="invalid-feedback" *ngIf="form.get('phone')?.errors?.['pattern']">Enter a valid phone number.</div>
+            </div>
+
+            
+            <div [ngClass]="(isEditMode && existingDocuments.length > 0) ? 'col-12 col-md-6' : 'col-12 col-md-4'">
+              <label class="form-label fw-semibold">Department <span class="text-danger">*</span></label>
+              <select
+                class="form-select"
+                formControlName="department"
+                [class.is-invalid]="form.get('department')?.invalid && form.get('department')?.touched"
+              >
+                <option value="">Select Department</option>
+                <option *ngFor="let dept of departments" [value]="dept">{{ dept }}</option>
+              </select>
+              <div class="invalid-feedback">Department is required.</div>
+            </div>
+
+            
+            <div [ngClass]="(isEditMode && existingDocuments.length > 0) ? 'col-12 col-md-6' : 'col-12 col-md-4'">
+              <label class="form-label fw-semibold">Designation <span class="text-danger">*</span></label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder=""
+                formControlName="designation"
+                [class.is-invalid]="form.get('designation')?.invalid && form.get('designation')?.touched"
+              />
+              <div class="invalid-feedback">Designation is required.</div>
+            </div>
+
+            
+            <div [ngClass]="(isEditMode && existingDocuments.length > 0) ? 'col-12 col-md-6' : 'col-12 col-md-4'">
+              <label class="form-label fw-semibold">Joining Date <span class="text-danger">*</span></label>
+              <input
+                type="date"
+                class="form-control"
+                formControlName="joiningDate"
+                [class.is-invalid]="form.get('joiningDate')?.invalid && form.get('joiningDate')?.touched"
+              />
+              <div class="invalid-feedback">Joining Date is required.</div>
+            </div>
+
+            
+            <div [ngClass]="(isEditMode && existingDocuments.length > 0) ? 'col-12 col-md-6' : 'col-12 col-md-4'">
+              <label class="form-label fw-semibold">Employment Status <span class="text-danger">*</span></label>
+              <select class="form-select" formControlName="status">
+                <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
+              </select>
+            </div>
+
+            
+            <div [ngClass]="(isEditMode && existingDocuments.length > 0) ? 'col-12 col-md-6' : 'col-12 col-md-8'">
+              <label class="form-label fw-semibold">Office / Residential Address</label>
+              <textarea
+                class="form-control"
+                rows="2"
+                placeholder="Enter street, city, country"
+                formControlName="address"
+              ></textarea>
+            </div>
+          </div>
+
+          
+          <div class="mt-4 pt-3 border-top">
+            <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-2">
+              <h6 class="fw-bold text-dark mb-1 fs-6"><i class="bi bi-paperclip me-1 text-primary"></i> Attach Documents & Images</h6>
+            </div>
+            <p class="text-muted small mb-2">
+              Supported: PDF, DOCX, XLSX, CSV, JPG, PNG (Max 10MB per file)
+            </p>
+
+            <div
+              class="dropzone mb-3"
+              (dragover)="onDragOver($event)"
+              (drop)="onFileDrop($event)"
+              (click)="fileInput.click()"
+            >
+              <i class="bi bi-cloud-arrow-up fs-2 text-primary mb-1 d-block"></i>
+              <div class="fw-semibold small">Drag & drop files here, or <span class="text-primary text-decoration-underline">browse</span></div>
+              <div class="text-muted small">Multiple documents and photos supported</div>
+              <input
+                type="file"
+                #fileInput
+                multiple
+                (change)="onFilesSelected($event)"
+                style="display: none"
+                accept=".jpg,.jpeg,.png,.pdf,.docx,.xlsx,.csv"
+              />
+            </div>
+
+            
+            <div *ngIf="selectedFiles.length > 0" class="selected-files-container mb-2">
+              <div class="fw-semibold small text-muted mb-2">Ready to Upload ({{ selectedFiles.length }}):</div>
+              <div class="d-flex flex-column gap-2">
+                <div
+                  *ngFor="let file of selectedFiles; let idx = index"
+                  class="d-flex justify-content-between align-items-center p-2 px-3 bg-light rounded border"
+                >
+                  <div class="d-flex align-items-center text-truncate me-2">
+                    <i class="bi me-2 text-primary fs-5" [ngClass]="isImageFile(file) ? 'bi-image' : 'bi-file-earmark-text'"></i>
+                    <span class="text-truncate small fw-semibold">{{ file.name }}</span>
+                    <span class="badge bg-secondary-subtle text-dark ms-2">{{ formatFileSize(file.size) }}</span>
+                    <span class="badge bg-warning-subtle text-warning ms-1" *ngIf="isImageFile(file) && file.size > 1048576">
+                      Will compress (&gt; 1MB)
+                    </span>
+                  </div>
+                  <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2" (click)="removeSelectedFile(idx)" title="Remove file">
+                    <i class="bi bi-x fs-6"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          
+          <div class="d-flex justify-content-end gap-2 mt-3 pt-3 border-top">
+            <a routerLink="/employees" class="btn btn-outline-secondary px-4" [class.disabled]="submitting">Cancel</a>
+            <button type="submit" class="btn btn-primary px-4" [disabled]="submitting">
+              <span class="spinner-border spinner-border-sm me-1" *ngIf="submitting"></span>
+              {{ submitting ? 'Saving Employee...' : (isEditMode ? 'Update Employee' : 'Create Employee') }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="col-lg-4" *ngIf="isEditMode && existingDocuments.length > 0">
+    <div class="card border-0 shadow-sm form-card">
+      <div class="card-header bg-white py-2 px-3 px-md-4 d-flex justify-content-between align-items-center">
+        <h6 class="fw-bold mb-0"><i class="bi bi-folder-check text-success me-2"></i> Existing Attached Files ({{ existingDocuments.length }})</h6>
+      </div>
+      <div class="card-body p-3">
+        <div class="d-flex flex-column gap-2">
+          <div *ngFor="let doc of existingDocuments" class="d-flex justify-content-between align-items-center p-2 rounded border bg-light">
+            <div class="d-flex align-items-center text-truncate me-2">
+              <i class="bi me-2" [ngClass]="doc.isImage ? 'bi-image text-info' : 'bi-file-earmark text-primary'"></i>
+              <span class="text-truncate small fw-medium" [title]="doc.originalFileName">{{ doc.originalFileName }}</span>
+            </div>
+            <div class="d-flex align-items-center gap-2 flex-shrink-0">
+              <span class="badge bg-secondary-subtle text-secondary small">{{ formatFileSize(doc.fileSize) }}</span>
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-danger py-0 px-2"
+                (click)="requestDeleteDocument(doc)"
+                title="Delete document"
+              >
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop fade show" *ngIf="selectedDocForDelete"></div>
+<div class="modal fade show d-block" tabindex="-1" *ngIf="selectedDocForDelete" role="dialog" aria-modal="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header border-bottom-0 pb-0">
+        <h5 class="modal-title fw-bold text-danger">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i> Confirm Delete File
+        </h5>
+        <button type="button" class="btn-close" (click)="cancelDeleteDocument()" [disabled]="deletingDoc"></button>
+      </div>
+      <div class="modal-body py-3">
+        <p class="mb-2">Are you sure you want to permanently delete this attached document?</p>
+        <div class="p-2 bg-light rounded border d-flex align-items-center">
+          <i class="bi me-2 fs-4" [ngClass]="selectedDocForDelete.isImage ? 'bi-image text-info' : 'bi-file-earmark-text text-primary'"></i>
+          <span class="fw-semibold text-truncate">{{ selectedDocForDelete.originalFileName }}</span>
+          <span class="badge bg-secondary-subtle text-secondary ms-auto">{{ formatFileSize(selectedDocForDelete.fileSize) }}</span>
+        </div>
+        <small class="text-danger d-block mt-2">
+          <i class="bi bi-info-circle me-1"></i> This action cannot be undone.
+        </small>
+      </div>
+      <div class="modal-footer border-top-0 pt-0">
+        <button type="button" class="btn btn-secondary px-3" (click)="cancelDeleteDocument()" [disabled]="deletingDoc">
+          Cancel
+        </button>
+        <button type="button" class="btn btn-danger px-3" (click)="confirmDeleteDocument()" [disabled]="deletingDoc">
+          <span class="spinner-border spinner-border-sm me-1" *ngIf="deletingDoc"></span>
+          {{ deletingDoc ? 'Deleting...' : 'Delete File' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
